@@ -92,6 +92,11 @@ def create_app() -> Flask:
             error.code,
         )
 
+    @app.errorhandler(ValueError)
+    def handle_validation_error(error: ValueError):
+        controller.logger.warning("[api] validation failed | %s", error)
+        return jsonify({"status": "error", "message": str(error)}), 400
+
     @app.errorhandler(Exception)
     def handle_error(error: Exception):
         controller.logger.error("[api] failed | %s", error)

@@ -225,6 +225,11 @@ def main() -> None:
                 recipient=args.recipient,
                 dry_run=args.dry_run,
             )
+    except ValueError as error:
+        if "controller" in locals():
+            controller.logger.warning("[%s] validation failed | %s", args.command, error)
+        print(json.dumps({"status": "error", "message": str(error)}, indent=2))
+        raise SystemExit(1) from error
     except Exception as error:
         if "controller" in locals():
             log_task_error(controller.logger, args.command, error)
