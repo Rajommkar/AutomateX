@@ -36,6 +36,9 @@ def organize_files(
     source_path = Path(source_folder)
     source_path.mkdir(parents=True, exist_ok=True)
 
+    if logger:
+        logger.info("Scanning folder %s for files to organize", source_path)
+
     moved_files: list[dict[str, str]] = []
     skipped_files: list[dict[str, str]] = []
     summary: dict[str, int] = {category: 0 for category in categories}
@@ -73,7 +76,7 @@ def organize_files(
         )
 
         if logger:
-            logger.info("Moved %s to %s", item.name, destination)
+            logger.info("Moved file %s to %s", item.name, destination)
 
     result = {
         "status": "completed_with_warnings" if skipped_files else "completed",

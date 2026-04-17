@@ -2,7 +2,7 @@
   "paths": {
     "source_folder": "workspace/downloads",
     "reports_folder": "reports",
-    "log_file": "logs/Activity.log",
+    "log_file": "logs/activity.log",
     "state_file": "logs/runtime_state.json"
   },
   "app": {
