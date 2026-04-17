@@ -37,6 +37,7 @@ def organize_files(
     source_path.mkdir(parents=True, exist_ok=True)
 
     moved_files: list[dict[str, str]] = []
+    skipped_files: list[dict[str, str]] = []
     summary: dict[str, int] = {category: 0 for category in categories}
     summary.setdefault("Others", 0)
 
@@ -49,7 +50,18 @@ def organize_files(
         target_folder.mkdir(parents=True, exist_ok=True)
 
         destination = _unique_destination(target_folder / item.name)
-        shutil.move(str(item), str(destination))
+        try:
+            shutil.move(str(item), str(destination))
+        except PermissionError as error:
+            skipped_files.append(
+                {
+                    "file_name": item.name,
+                    "reason": str(error),
+                }
+            )
+            if logger:
+                logger.warning("Skipped locked file %s | %s", item.name, error)
+            continue
 
         summary[category] = summary.get(category, 0) + 1
         moved_files.append(
@@ -64,17 +76,20 @@ def organize_files(
             logger.info("Moved %s to %s", item.name, destination)
 
     result = {
+        "status": "completed_with_warnings" if skipped_files else "completed",
         "source_folder": str(source_path),
         "total_files_moved": len(moved_files),
         "moved_files": moved_files,
+        "skipped_files": skipped_files,
         "summary": summary,
     }
 
     if logger:
         logger.info(
-            "File organization completed for %s. Files moved: %s",
+            "File organization completed for %s. Files moved: %s. Files skipped: %s",
             source_path,
             len(moved_files),
+            len(skipped_files),
         )
 
     return result

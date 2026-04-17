@@ -16,9 +16,25 @@ def _read_recent_logs(log_file: str | Path, limit: int = 10) -> list[str]:
     return lines[-limit:]
 
 
+def _pick_result(
+    task_name: str,
+    explicit_result: dict | None,
+    state_snapshot: dict | None,
+) -> dict | None:
+    if explicit_result:
+        return explicit_result
+
+    if not state_snapshot:
+        return None
+
+    return state_snapshot.get("last_results", {}).get(task_name)
+
+
 def generate_report(
     reports_folder: str | Path,
     log_file: str | Path,
+    app_settings: dict | None = None,
+    state_snapshot: dict | None = None,
     organization_result: dict | None = None,
     email_result: dict | None = None,
     logger=None,
@@ -28,9 +44,24 @@ def generate_report(
 
     timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
     report_path = reports_path / f"automation_report_{timestamp}.txt"
+    report_settings = app_settings or {}
+    organization_result = _pick_result(
+        "organize",
+        organization_result,
+        state_snapshot,
+    )
+    email_result = _pick_result(
+        "send_email",
+        email_result,
+        state_snapshot,
+    )
+    recent_logs = _read_recent_logs(
+        log_file,
+        limit=int(report_settings.get("report_log_lines", 10)),
+    )
 
     report_lines = [
-        "Smart Automation Bot Report",
+        report_settings.get("project_name", "Smart Automation Bot Report"),
         f"Generated at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
         "",
         "Task Summary",
@@ -41,6 +72,7 @@ def generate_report(
         report_lines.extend(
             [
                 f"Files moved: {organization_result.get('total_files_moved', 0)}",
+                f"Files skipped: {len(organization_result.get('skipped_files', []))}",
                 "Organization breakdown:",
             ]
         )
@@ -62,8 +94,15 @@ def generate_report(
     else:
         report_lines.append("Email status: No email run attached.")
 
+    if state_snapshot:
+        report_lines.extend(["", "Recent Task History", "-------------------"])
+        for item in state_snapshot.get("history", [])[-5:]:
+            report_lines.append(
+                f"- {item['timestamp']} | {item['task']} | {item['status']}"
+            )
+
     report_lines.extend(["", "Recent Activity Logs", "--------------------"])
-    report_lines.extend(_read_recent_logs(log_file))
+    report_lines.extend(recent_logs)
 
     report_path.write_text("\n".join(report_lines) + "\n", encoding="utf-8")
 

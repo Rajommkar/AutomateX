@@ -6,6 +6,7 @@ __pycache__/
 venv/
 
 logs/*.log
+logs/*.json
 reports/*.txt
 workspace/
 

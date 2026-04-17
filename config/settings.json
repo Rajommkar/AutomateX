@@ -2,7 +2,15 @@
   "paths": {
     "source_folder": "workspace/downloads",
     "reports_folder": "reports",
-    "log_file": "logs/Activity.log"
+    "log_file": "logs/Activity.log",
+    "state_file": "logs/runtime_state.json"
+  },
+  "app": {
+    "project_name": "Smart Automation Bot",
+    "report_log_lines": 10,
+    "history_limit": 20,
+    "console_logging": false,
+    "default_email_dry_run": false
   },
   "organization": {
     "categories": {
