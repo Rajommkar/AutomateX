@@ -1,0 +1,61 @@
+{
+  "paths": {
+    "source_folder": "workspace/downloads",
+    "reports_folder": "reports",
+    "log_file": "logs/Activity.log"
+  },
+  "organization": {
+    "categories": {
+      "Images": [
+        ".jpg",
+        ".jpeg",
+        ".png",
+        ".gif",
+        ".svg",
+        ".webp"
+      ],
+      "Documents": [
+        ".pdf",
+        ".doc",
+        ".docx",
+        ".txt",
+        ".ppt",
+        ".pptx",
+        ".xls",
+        ".xlsx"
+      ],
+      "Videos": [
+        ".mp4",
+        ".mkv",
+        ".mov",
+        ".avi"
+      ],
+      "Audio": [
+        ".mp3",
+        ".wav",
+        ".aac"
+      ],
+      "Archives": [
+        ".zip",
+        ".rar",
+        ".7z"
+      ],
+      "Code": [
+        ".py",
+        ".js",
+        ".html",
+        ".css",
+        ".json"
+      ],
+      "Others": []
+    }
+  },
+  "email": {
+    "smtp_server": "smtp.gmail.com",
+    "smtp_port": 587,
+    "use_tls": true,
+    "sender_email": "",
+    "sender_password": "",
+    "recipient_email": ""
+  }
+}
