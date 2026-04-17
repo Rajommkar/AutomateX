@@ -87,8 +87,10 @@ def generate_report(
         report_lines.extend(
             [
                 f"Email status: {email_result.get('status', 'unknown')}",
+                f"Email delivery mode: {email_result.get('delivery_mode', 'unknown')}",
                 f"Email recipient: {email_result.get('recipient', 'not provided')}",
                 f"Email subject: {email_result.get('subject', 'not provided')}",
+                f"Email message: {email_result.get('message', 'not provided')}",
             ]
         )
     else:
