@@ -1,53 +1,60 @@
-# AutomateX
+# AutomateX: Smart Automation Bot
 
 ## Overview
+AutomateX is a professional-grade Python automation system for repetitive daily tasks. It combines clean coding structures with robust backend practices, delivering a highly scalable background processor linked to a Flask API and dashboard.
 
-AutomateX is a Python-based automation system for repetitive daily tasks. It currently organizes files by type, prepares email workflows, generates activity reports, and records system events through a reusable logging module.
+## Architecture
+Flask → Controller → Modules → Logs
+
+Our modular design demonstrates advanced system separation:
+- **Flask (Web Layer):** Purely handles incoming HTTP requests and standardizes responses.
+- **Controller Layer:** Acts as the strict middleware, keeping complex integrations out of the web layer.
+- **Modules (Engine):** Isolated scripts for organizing files, sending emails, generating reports, and scheduling.
+- **Configuration (config/settings.json):** We NEVER hardcode values. Paths, categories, and email credentials are all loaded dynamically to enhance scalability.
+- **Storage/Logs:** All activities and failures are safely caught through global exception handling and logged to local text records.
 
 ## Features
+- File automation system
+- Email automation
+- Logging system
+- REST API
 
-- Organizes files into categories such as Documents, Images, Audio, Archives, and Code
-- Generates text reports for completed automation runs
-- Supports dynamic email input with subject, message, and recipient
-- Supports dry-run email testing before real credential setup
-- Reads email credentials from environment variables instead of hardcoding them
-- Logs actions, warnings, and errors with timestamps in `logs/activity.log`
-- Uses `controller.py` as the central workflow layer connecting modules
-- Uses a modular project structure that can scale into Flask and a web dashboard
+## Example API Response
+Our backend implements strict, predictable formatting to ensure it is 100% frontend-ready.
 
-## Project Structure
-
-- `controller.py`: central control layer for running automation tasks
-- `modules/file_organizer.py`: scans folders and moves files into category-based directories
-- `modules/email_bot.py`: handles email send or dry-run execution
-- `modules/report_generator.py`: creates reports in the `reports/` folder
-- `modules/logger.py`: configures timestamped file logging
-- `modules/config_manager.py`: loads settings and resolves runtime paths
-- `controller.py`: coordinates file organization, email, and reporting as one system
-- `config/settings.json`: stores source paths, log paths, and email settings
-
-## Run From Terminal
-
-```bash
-python -B controller.py organize
-python -B controller.py send-email --subject "Test" --body "Hello" --recipient "someone@example.com" --dry-run
-python -B controller.py generate-report
-python -B controller.py run-all --subject "Daily Report" --body "Automation completed." --recipient "someone@example.com" --dry-run
+```json
+{
+  "status": "success",
+  "data": {
+    "total_files_moved": 15,
+    "summary": {
+      "Images": 12,
+      "Documents": 3
+    }
+  }
+}
 ```
 
-## Email Setup
+Error responses utilize the same wrapper:
+```json
+{
+  "status": "error",
+  "message": "[Errno 13] Permission denied:"
+}
+```
 
-Use environment variables for real email delivery:
+## Setup & Running the API
+Install Flask and standard packages. You can run the automation either purely from the terminal or serve the web dashboard.
 
+**Start the Flask Server:**
+```bash
+python app.py
+```
+*Navigate to `http://127.0.0.1:5000` to interact with the premium UI.*
+
+## Email Setup (Environment Variables)
 ```bash
 AUTOMATEX_SENDER_EMAIL=your_email@example.com
 AUTOMATEX_SENDER_PASSWORD=your_app_password
 AUTOMATEX_SMTP_SERVER=smtp.gmail.com
-AUTOMATEX_SMTP_PORT=587
-AUTOMATEX_USE_TLS=true
-AUTOMATEX_RECIPIENT_EMAIL=receiver@example.com
 ```
-
-## Logging
-
-All task activity is written to `logs/activity.log` with timestamps. This makes the project easier to debug, easier to demonstrate, and more aligned with real-world automation tools.
