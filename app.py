@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, render_template
 from werkzeug.exceptions import HTTPException
 
 from controller import AutomationController
@@ -12,21 +12,7 @@ def create_app() -> Flask:
 
     @app.get("/")
     def index():
-        return jsonify(
-            {
-                "project": controller.settings["app"].get(
-                    "project_name",
-                    "AutomateX",
-                ),
-                "message": "Day 3 backend is running.",
-                "available_routes": [
-                    "GET /health",
-                    "POST /organize",
-                    "POST /send-email",
-                    "POST /generate-report",
-                ],
-            }
-        )
+        return render_template("index.html")
 
     @app.get("/health")
     def health():
