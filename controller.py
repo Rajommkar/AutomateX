@@ -14,6 +14,7 @@ from modules.logger import (
     log_task_success,
 )
 from modules.report_generator import generate_report
+from modules.scheduler import NativeScheduler
 
 
 BASE_DIR = Path(__file__).resolve().parent
@@ -123,6 +124,15 @@ class AutomationController:
         workflow_result["report"] = self.generate_report()
         return workflow_result
 
+    def start_scheduler(self):
+        self.logger.info("Initializing global task scheduler...")
+        scheduler = NativeScheduler(logger=self.logger)
+        
+        scheduler.every_hour(lambda: self.organize())
+        scheduler.every_day_at(18, 0, lambda: self.generate_report())
+        
+        scheduler.start_blocking_loop()
+
     def _load_state(self) -> dict:
         state_path = self.paths["state_file"]
         if not state_path.exists():
@@ -180,6 +190,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
 
     subparsers.add_parser("generate-report", help="Generate a text report")
+    subparsers.add_parser("start-scheduler", help="Run the continuous background task scheduler")
     run_all_parser = subparsers.add_parser(
         "run-all",
         help="Run organization, optional email, and reporting in one workflow",
@@ -217,6 +228,9 @@ def main() -> None:
             )
         elif args.command == "generate-report":
             result = controller.generate_report()
+        elif args.command == "start-scheduler":
+            controller.start_scheduler()
+            result = {"status": "success", "message": "Scheduler terminated."}
         else:
             result = controller.run_all(
                 source_folder=args.source_folder,
