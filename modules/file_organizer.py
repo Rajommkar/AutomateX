@@ -33,66 +33,71 @@ def organize_files(
     categories: dict[str, list[str]],
     logger=None,
 ) -> dict:
-    source_path = Path(source_folder)
-    source_path.mkdir(parents=True, exist_ok=True)
-
-    if logger:
-        logger.info("Scanning folder %s for files to organize", source_path)
-
-    moved_files: list[dict[str, str]] = []
-    skipped_files: list[dict[str, str]] = []
-    summary: dict[str, int] = {category: 0 for category in categories}
-    summary.setdefault("Others", 0)
-
-    for item in source_path.iterdir():
-        if not item.is_file():
-            continue
-
-        category = _resolve_category(item, categories)
-        target_folder = source_path / category
-        target_folder.mkdir(parents=True, exist_ok=True)
-
-        destination = _unique_destination(target_folder / item.name)
-        try:
-            shutil.move(str(item), str(destination))
-        except PermissionError as error:
-            skipped_files.append(
-                {
-                    "file_name": item.name,
-                    "reason": str(error),
-                }
-            )
-            if logger:
-                logger.warning("Skipped locked file %s | %s", item.name, error)
-            continue
-
-        summary[category] = summary.get(category, 0) + 1
-        moved_files.append(
-            {
-                "file_name": item.name,
-                "category": category,
-                "destination": str(destination),
-            }
-        )
+    try:
+        source_path = Path(source_folder)
+        source_path.mkdir(parents=True, exist_ok=True)
 
         if logger:
-            logger.info("Moved file %s to %s", item.name, destination)
+            logger.info("Scanning folder %s for files to organize", source_path)
 
-    result = {
-        "status": "completed_with_warnings" if skipped_files else "completed",
-        "source_folder": str(source_path),
-        "total_files_moved": len(moved_files),
-        "moved_files": moved_files,
-        "skipped_files": skipped_files,
-        "summary": summary,
-    }
+        moved_files: list[dict[str, str]] = []
+        skipped_files: list[dict[str, str]] = []
+        summary: dict[str, int] = {category: 0 for category in categories}
+        summary.setdefault("Others", 0)
 
-    if logger:
-        logger.info(
-            "File organization completed for %s. Files moved: %s. Files skipped: %s",
-            source_path,
-            len(moved_files),
-            len(skipped_files),
-        )
+        for item in source_path.iterdir():
+            if not item.is_file():
+                continue
 
-    return result
+            category = _resolve_category(item, categories)
+            target_folder = source_path / category
+            target_folder.mkdir(parents=True, exist_ok=True)
+
+            destination = _unique_destination(target_folder / item.name)
+            try:
+                shutil.move(str(item), str(destination))
+            except PermissionError as error:
+                skipped_files.append(
+                    {
+                        "file_name": item.name,
+                        "reason": str(error),
+                    }
+                )
+                if logger:
+                    logger.warning("Skipped locked file %s | %s", item.name, error)
+                continue
+
+            summary[category] = summary.get(category, 0) + 1
+            moved_files.append(
+                {
+                    "file_name": item.name,
+                    "category": category,
+                    "destination": str(destination),
+                }
+            )
+
+            if logger:
+                logger.info("Moved file %s to %s", item.name, destination)
+
+        result = {
+            "status": "completed_with_warnings" if skipped_files else "completed",
+            "source_folder": str(source_path),
+            "total_files_moved": len(moved_files),
+            "moved_files": moved_files,
+            "skipped_files": skipped_files,
+            "summary": summary,
+        }
+
+        if logger:
+            logger.info(
+                "File organization completed for %s. Files moved: %s. Files skipped: %s",
+                source_path,
+                len(moved_files),
+                len(skipped_files),
+            )
+
+        return result
+    except Exception as e:
+        if logger:
+            logger.error(f"Global exception in file_organizer: {e}")
+        return {"status": "error", "message": str(e)}
