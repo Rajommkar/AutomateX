@@ -19,10 +19,10 @@ Frontend → Flask API → Controller → Modules → Logs
 - HTML/CSS/JS
 
 ## Screenshots
-![AutomateX Dashboard](./assets/dashboard.png)
+![AutomateX Dashboard](./assets/dashboard_flat.png)
 
 ## Demo
-![AutomateX Demo](https://via.placeholder.com/800x450.png?text=AutomateX+Demo+Coming+Soon)
+![AutomateX System Logs](./assets/demo_logs.png)
 
 ## How to Run
 
