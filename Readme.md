@@ -22,7 +22,7 @@ Frontend → Flask API → Controller → Modules → Logs
 ![AutomateX Dashboard](./assets/dashboard_flat.png)
 
 ## Demo
-![AutomateX System Logs](./assets/demo_logs.png)
+![AutomateX System Logs](./assets/user_demo.png)
 
 ## How to Run
 
