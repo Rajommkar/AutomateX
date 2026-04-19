@@ -3,11 +3,15 @@ from __future__ import annotations
 from flask import Flask, jsonify, request, render_template
 
 from controller import AutomationController
+from database.db import init_db
 
 
 def create_app() -> Flask:
     app = Flask(__name__)
     controller = AutomationController()
+
+    # Initialize the local database automatically
+    init_db()
 
     @app.get("/")
     def index():
