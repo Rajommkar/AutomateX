@@ -5,35 +5,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AutomateX | Product Dashboard</title>
     <!-- Premium Font -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-base: #0f0f11;
-            --bg-panel: #161619;
+            --bg-base: #0a0a0c;
+            --bg-panel: rgba(255, 255, 255, 0.03);
             --border-subtle: rgba(255, 255, 255, 0.05);
-            --border-hover: rgba(255, 255, 255, 0.15);
             
-            --text-primary: #ededed;
+            --text-primary: #f8f8f8;
             --text-secondary: #8b8b92;
             
             --accent-brand: #6366f1;
             --accent-hover: #4f46e5;
             
             --color-success: #10b981;
-            --color-success-bg: rgba(16, 185, 129, 0.1);
             --color-error: #ef4444;
-            --color-error-bg: rgba(239, 68, 68, 0.1);
 
-            --radius-xl: 20px;
-            --radius-lg: 12px;
-            --radius-md: 8px;
+            --radius-xl: 24px;
+            --radius-lg: 16px;
+            --radius-md: 10px;
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Inter', sans-serif;
+            font-family: 'Outfit', sans-serif;
             -webkit-font-smoothing: antialiased;
         }
 
@@ -43,462 +40,474 @@
             height: 100vh;
             display: flex;
             overflow: hidden;
+            position: relative;
         }
+        
+        /* ------------------------ AUTH GATEWAY ------------------------ */
+        #authOverlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(10, 10, 12, 0.85);
+            backdrop-filter: blur(12px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.4s ease;
+        }
+
+        #authOverlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .auth-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border-subtle);
+            padding: 3rem;
+            border-radius: var(--radius-xl);
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            text-align: center;
+        }
+
+        .auth-card h2 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 2rem;
+            background: linear-gradient(135deg, #fff, #8b8b92);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .auth-input {
+            width: 100%;
+            padding: 1rem 1.2rem;
+            margin-bottom: 1rem;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            color: #fff;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .auth-input:focus {
+            border-color: var(--accent-brand);
+        }
+
+        .auth-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .btn {
+            padding: 0.875rem 1.5rem;
+            border-radius: var(--radius-md);
+            border: none;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .btn-primary {
+            background-color: var(--accent-brand);
+            color: white;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn-primary:hover { background-color: var(--accent-hover); transform: translateY(-1px); }
+
+        .btn-secondary {
+            background-color: transparent;
+            color: var(--text-primary);
+            border: 1px solid var(--border-subtle);
+        }
+        .btn-secondary:hover { background-color: rgba(255, 255, 255, 0.05); }
+
+        .auth-error {
+            color: var(--color-error);
+            font-size: 0.85rem;
+            margin-top: 1rem;
+            min-height: 1.2em;
+        }
+
+        /* ------------------------ DASHBOARD ------------------------ */
+        
+        #appContainer {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            transition: opacity 0.4s ease;
+        }
+        #appContainer.blur-bg { filter: blur(5px); opacity: 0.5; pointer-events: none;}
 
         /* Sidebar Navigation */
         .sidebar {
             width: 260px;
-            background-color: var(--bg-panel);
-            border-right: 1px solid var(--border-subtle);
+            background-color: transparent;
             display: flex;
             flex-direction: column;
-            padding: 2rem 1.5rem;
+            padding: 2.5rem 1.5rem;
+            border-right: 1px solid rgba(255, 255, 255, 0.02);
+            z-index: 10;
         }
 
         .brand {
             display: flex;
             align-items: center;
             gap: 12px;
-            font-size: 1.25rem;
+            font-size: 1.3rem;
             font-weight: 700;
-            letter-spacing: -0.5px;
-            margin-bottom: 3rem;
+            margin-bottom: 3.5rem;
             color: #fff;
+            padding-left: 0.5rem;
         }
         
         .brand-icon {
-            width: 32px;
-            height: 32px;
+            width: 32px; height: 32px;
             background: linear-gradient(135deg, #6366f1, #a855f7);
             border-radius: var(--radius-md);
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            display: flex; align-items: center; justify-content: center;
             box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
         }
 
-        .nav-items {
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-        }
+        .nav-items { display: flex; flex-direction: column; gap: 0.3rem; }
 
         .nav-item {
-            padding: 0.75rem 1rem;
+            padding: 0.8rem 1rem;
             border-radius: var(--radius-md);
             color: var(--text-secondary);
-            text-decoration: none;
-            font-size: 0.95rem;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            transition: all 0.2s ease;
+            font-size: 0.95rem; font-weight: 500;
+            display: flex; align-items: center; gap: 12px;
+            cursor: pointer; transition: all 0.2s ease;
         }
 
-        .nav-item:hover {
-            color: var(--text-primary);
-            background-color: rgba(255, 255, 255, 0.03);
-        }
-
-        .nav-item.active {
-            background-color: rgba(99, 102, 241, 0.1);
-            color: var(--accent-brand);
-        }
+        .nav-item:hover { color: var(--text-primary); background-color: rgba(255, 255, 255, 0.02); }
+        .nav-item.active { background-color: rgba(99, 102, 241, 0.1); color: var(--accent-brand); }
 
         /* Main Content */
         .main-content {
-            flex-grow: 1;
-            padding: 2.5rem 3.5rem;
-            overflow-y: auto;
-            position: relative;
+            flex-grow: 1; padding: 3rem 4rem;
+            overflow-y: auto; position: relative;
         }
 
+        /* Ambient Glow Background */
         .main-content::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0; height: 300px;
-            background: radial-gradient(circle at 15% 0%, rgba(99, 102, 241, 0.08) 0%, transparent 60%);
-            pointer-events: none;
-            z-index: 0;
+            content: ''; position: absolute;
+            top: -100px; left: 10%; width: 600px; height: 600px;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.05) 0%, transparent 70%);
+            pointer-events: none; z-index: 0;
         }
 
-        .header {
-            position: relative;
-            z-index: 1;
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-            margin-bottom: 3rem;
-        }
+        .header { margin-bottom: 3rem; position: relative; z-index: 1; }
+        .header h1 { font-size: 2.2rem; font-weight: 600; margin-bottom: 0.5rem; }
+        .header p { color: var(--text-secondary); font-size: 1rem; }
 
-        .header h1 {
-            font-size: 2rem;
-            font-weight: 600;
-            letter-spacing: -0.5px;
-            margin-bottom: 0.5rem;
-        }
+        /* Dynamic Panel Switching */
+        .tab-pane { display: none; position: relative; z-index: 1; animation: fadeIn 0.3s ease forwards; }
+        .tab-pane.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        .header p {
-            color: var(--text-secondary);
-            font-size: 1rem;
-        }
-
-        .status-badge {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 0.5rem 1rem;
-            background-color: rgba(16, 185, 129, 0.1);
-            color: var(--color-success);
-            border: 1px solid rgba(16, 185, 129, 0.2);
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 600;
-        }
-        
-        .status-badge .dot {
-            width: 8px;
-            height: 8px;
-            background-color: var(--color-success);
-            border-radius: 50%;
-            box-shadow: 0 0 10px var(--color-success);
-            animation: pulse 2s infinite;
-        }
-
-        /* Product Cards */
-        .section-title {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: var(--text-primary);
-            margin-bottom: 1.5rem;
-            position: relative;
-            z-index: 1;
-        }
-
+        /* Premium Modules */
         .modules-grid {
-            position: relative;
-            z-index: 1;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 3rem;
+            display: flex; flex-direction: column; gap: 1rem;
         }
 
-        .module-card {
+        .module-row {
             background-color: var(--bg-panel);
-            border: 1px solid var(--border-subtle);
-            border-radius: var(--radius-xl);
-            padding: 2rem;
-            display: flex;
-            flex-direction: column;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
+            backdrop-filter: blur(10px);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem 2rem;
+            display: flex; align-items: center;
+            transition: background-color 0.3s, transform 0.2s;
         }
 
-        .module-card:hover {
-            border-color: var(--border-hover);
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-        }
-
-        .card-header {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            margin-bottom: 1rem;
+        .module-row:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+            transform: scale(1.005);
         }
 
         .icon-box {
-            width: 44px;
-            height: 44px;
+            width: 48px; height: 48px; min-width: 48px;
             background-color: rgba(255, 255, 255, 0.03);
-            border: 1px solid var(--border-subtle);
-            border-radius: var(--radius-lg);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.25rem;
-            transition: all 0.3s ease;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.4rem; margin-right: 1.5rem;
         }
 
-        .module-card h2 {
-            font-size: 1.1rem;
-            font-weight: 600;
-        }
+        .module-info { flex-grow: 1; }
+        .module-info h2 { font-size: 1.1rem; font-weight: 500; margin-bottom: 0.2rem; }
+        .module-info p { color: var(--text-secondary); font-size: 0.9rem; }
 
-        .module-card p {
-            color: var(--text-secondary);
-            font-size: 0.95rem;
-            line-height: 1.5;
-            margin-bottom: 2rem;
-            flex-grow: 1;
-        }
+        .module-action { min-width: 150px; }
 
-        /* Action Buttons */
-        .btn {
-            width: 100%;
-            padding: 0.875rem 1.5rem;
-            border-radius: var(--radius-md);
-            border: none;
-            font-size: 0.95rem;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.2s ease;
-        }
-
-        .btn-primary {
-            background-color: var(--accent-brand);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background-color: var(--accent-hover);
-        }
-
-        .btn-ghost {
-            background-color: transparent;
-            border: 1px solid var(--border-subtle);
-            color: var(--text-primary);
-        }
-
-        .btn-ghost:hover {
-            background-color: rgba(255, 255, 255, 0.05);
-            border-color: var(--border-hover);
-        }
-
-        /* Dynamic States */
-        /* Success State */
-        .module-card.state-success {
-            border-color: var(--color-success);
-            box-shadow: 0 4px 20px rgba(16, 185, 129, 0.1);
-        }
-        .module-card.state-success .icon-box {
-            background-color: var(--color-success-bg);
-            border-color: rgba(16, 185, 129, 0.3);
-            color: var(--color-success);
-        }
-        .module-card.state-success .btn {
-            background-color: var(--color-success);
-            color: white;
-        }
-
-        /* Error State */
-        .module-card.state-error {
-            border-color: var(--color-error);
-            box-shadow: 0 4px 20px rgba(239, 68, 68, 0.1);
-        }
-        .module-card.state-error .icon-box {
-            background-color: var(--color-error-bg);
-            border-color: rgba(239, 68, 68, 0.3);
-            color: var(--color-error);
-        }
-        .module-card.state-error .btn {
-            background-color: var(--color-error);
-            color: white;
-        }
-
-        /* Logs Console */
+        /* Telemetry View */
         .terminal-container {
-            position: relative;
-            z-index: 1;
-            background-color: #000;
-            border: 1px solid var(--border-subtle);
-            border-radius: var(--radius-lg);
-            overflow: hidden;
+            background-color: rgba(0, 0, 0, 0.3);
+            border-radius: var(--radius-xl); overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.02);
+            height: 60vh;
+            display: flex; flex-direction: column;
         }
-
         .terminal-header {
-            background-color: #1a1a1a;
-            padding: 0.75rem 1.5rem;
-            border-bottom: 1px solid var(--border-subtle);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .mac-dots div {
-            width: 10px; height: 10px; border-radius: 50%;
+            background-color: rgba(255,255,255,0.02); padding: 1rem 1.5rem;
+            display: flex; align-items: center; gap: 8px;
         }
         .mac-dots { display: flex; gap: 6px; }
+        .mac-dots div { width: 10px; height: 10px; border-radius: 50%; }
         .mac-dots .red { background-color: #ff5f56; }
         .mac-dots .yellow { background-color: #ffbd2e; }
         .mac-dots .green { background-color: #27c93f; }
         
-        .terminal-header span {
-            color: var(--text-secondary);
-            font-size: 0.85rem;
-            font-family: monospace;
-            margin-left: 10px;
-        }
+        .terminal-header span { color: var(--text-secondary); font-size: 0.85rem; font-family: monospace; margin-left: 10px; }
 
         .log-window {
-            padding: 1.5rem;
-            height: 250px;
-            overflow-y: auto;
-            font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
-            font-size: 0.85rem;
-            line-height: 1.6;
+            padding: 1.5rem; flex-grow: 1; overflow-y: auto;
+            font-family: 'SFMono-Regular', Consolas, monospace; font-size: 0.85rem; line-height: 1.6;
         }
-
         .log-entry.info { color: #8b8b92; }
         .log-entry.success { color: var(--color-success); }
         .log-entry.error { color: var(--color-error); }
-        
-        .timestamp {
-            color: #555;
-            margin-right: 12px;
-        }
+        .timestamp { color: #555; margin-right: 12px; }
 
         /* Loader */
         .spinner {
-            display: none;
-            width: 16px; height: 16px;
-            border: 2px solid rgba(255,255,255,0.3);
-            border-top-color: #fff;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
+            display: none; width: 16px; height: 16px;
+            border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff;
+            border-radius: 50%; animation: spin 0.8s linear infinite;
         }
         .loading .spinner { display: inline-block; }
         .loading .btn-text { display: none; }
-
         @keyframes spin { 100% { transform: rotate(360deg); } }
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
-        
-        ::-webkit-scrollbar { width: 6px; }
+
+        /* Utilities */
+        ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 2px; }
     </style>
 </head>
 <body>
 
-    <aside class="sidebar">
-        <div class="brand">
-            <div class="brand-icon">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+    <!-- AUTHENTICATION GATEWAY -->
+    <div id="authOverlay" class="auth-overlay">
+        <div class="auth-card">
+            <h2>Secure Gateway</h2>
+            <input type="email" id="authEmail" class="auth-input" placeholder="Identity (Email)" autocomplete="off">
+            <input type="password" id="authPass" class="auth-input" placeholder="Passkey" autocomplete="off">
+            <div id="authMessage" class="auth-error"></div>
+            <div class="auth-actions">
+                <button class="btn btn-secondary" onclick="executeAuth('signup')">Register</button>
+                <button class="btn btn-primary" onclick="executeAuth('login')">Unlock</button>
             </div>
-            AutomateX
         </div>
-        <nav class="nav-items">
-            <a href="#" class="nav-item active">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
-                Overview
-            </a>
-            <a href="#" class="nav-item">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-                Settings
-            </a>
-            <a href="#" class="nav-item">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
-                Logs
-            </a>
-        </nav>
-    </aside>
+    </div>
 
-    <main class="main-content">
-        <header class="header">
-            <div>
+    <!-- DASHBOARD WORKSPACE -->
+    <div id="appContainer" class="app-container blur-bg">
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="brand-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                </div>
+                AutomateX
+            </div>
+            <nav class="nav-items">
+                <div class="nav-item active" onclick="switchPane('overviewPane', this)">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                    Overview
+                </div>
+                <div class="nav-item" onclick="switchPane('logsPane', this)">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg>
+                    Command Output
+                </div>
+                <div class="nav-item" onclick="switchPane('settingsPane', this)">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                    Settings
+                </div>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="header">
                 <h1>Dashboard</h1>
-                <p>Monitor and execute AutomateX workflows</p>
-            </div>
-            <div class="status-badge">
-                <div class="dot"></div> System Online
-            </div>
-        </header>
+                <p>Command center for intelligent background tasks.</p>
+            </header>
 
-        <section>
-            <h2 class="section-title">Execution Modules</h2>
-            <div class="modules-grid">
-                
-                <!-- File Organizer -->
-                <div class="module-card">
-                    <div class="card-header">
+            <!-- PANE 1: OVERVIEW -->
+            <div id="overviewPane" class="tab-pane active">
+                <div class="modules-grid">
+                    
+                    <!-- Formatted as sleek borderless rows -->
+                    <div class="module-row">
                         <div class="icon-box">📁</div>
-                        <h2>File Organizer</h2>
+                        <div class="module-info">
+                            <h2>File Hierarchy Optimizer</h2>
+                            <p>Automatically categorizes unordered files into standardized directories.</p>
+                        </div>
+                        <div class="module-action">
+                            <button class="btn btn-primary" onclick="triggerTask('organize', this, {})">
+                                <span class="btn-text">Execute</span>
+                                <span class="spinner"></span>
+                            </button>
+                        </div>
                     </div>
-                    <p>Scans configured directories and dynamically routes files into correct categories based on extensions.</p>
-                    <button class="btn btn-primary" onclick="triggerTask('organize', this, {})">
-                        <span class="btn-text">Execute Task</span>
-                        <span class="spinner"></span>
-                    </button>
-                </div>
 
-                <!-- Email Bot -->
-                <div class="module-card">
-                    <div class="card-header">
+                    <div class="module-row">
                         <div class="icon-box">📧</div>
-                        <h2>Email Engine</h2>
+                        <div class="module-info">
+                            <h2>Email Verification Node</h2>
+                            <p>Validates SMTP network paths by dispatching a test payload broadcast.</p>
+                        </div>
+                        <div class="module-action">
+                            <button class="btn btn-secondary" onclick="triggerTask('send-email', this, { subject: 'Ping from AutomateX', body: 'System operational.', dry_run: true })">
+                                <span class="btn-text">Run Diagnostic</span>
+                                <span class="spinner"></span>
+                            </button>
+                        </div>
                     </div>
-                    <p>Verifies SMTP configurations by dispatching a test broadcast. Critical for checking network connectivity.</p>
-                    <button class="btn btn-ghost" onclick="triggerTask('send-email', this, { subject: 'Ping from AutomateX', body: 'System operational.', dry_run: true })">
-                        <span class="btn-text">Run Diagnostics</span>
-                        <span class="spinner"></span>
-                    </button>
-                </div>
 
-                <!-- Activity Report -->
-                <div class="module-card">
-                    <div class="card-header">
+                    <div class="module-row">
                         <div class="icon-box">📊</div>
-                        <h2>Report Generator</h2>
+                        <div class="module-info">
+                            <h2>Telemetry Compiler</h2>
+                            <p>Distills raw execution event logs into clean, readable tactical summaries.</p>
+                        </div>
+                        <div class="module-action">
+                            <button class="btn btn-secondary" onclick="triggerTask('generate-report', this, {})">
+                                <span class="btn-text">Generate Intel</span>
+                                <span class="spinner"></span>
+                            </button>
+                        </div>
                     </div>
-                    <p>Compiles execution logs into a streamlined daily activity report for administrative review.</p>
-                    <button class="btn btn-ghost" onclick="triggerTask('generate-report', this, {})">
-                        <span class="btn-text">Generate Intel</span>
-                        <span class="spinner"></span>
-                    </button>
-                </div>
 
-            </div>
-        </section>
-
-        <section>
-            <h2 class="section-title">Real-time Telemetry</h2>
-            <div class="terminal-container">
-                <div class="terminal-header">
-                    <div class="mac-dots">
-                        <div class="red"></div><div class="yellow"></div><div class="green"></div>
-                    </div>
-                    <span>/var/log/automatex.log</span>
-                </div>
-                <div class="log-window" id="logWindow">
-                    <div class="log-entry info"><span class="timestamp">[SYS]</span> Kernel loaded. Daemon active and awaiting inputs.</div>
                 </div>
             </div>
-        </section>
 
-    </main>
+            <!-- PANE 2: LOGS -->
+            <div id="logsPane" class="tab-pane">
+                <div class="terminal-container">
+                    <div class="terminal-header">
+                        <div class="mac-dots">
+                            <div class="red"></div><div class="yellow"></div><div class="green"></div>
+                        </div>
+                        <span>/var/log/automatex.log</span>
+                    </div>
+                    <div class="log-window" id="logWindow">
+                        <div class="log-entry info"><span class="timestamp">[SYS]</span> Kernel bootstrapped. Session active.</div>
+                    </div>
+                </div>
+            </div>
 
+            <!-- PANE 3: SETTINGS -->
+            <div id="settingsPane" class="tab-pane">
+                <div class="module-row">
+                    <div class="icon-box" style="color:var(--color-error)">🔒</div>
+                    <div class="module-info">
+                        <h2>Client Authentication Area</h2>
+                        <p>Terminate the active secure session and lock the dashboard.</p>
+                    </div>
+                    <div class="module-action">
+                        <button class="btn btn-secondary" style="border-color: rgba(239, 68, 68, 0.4); color: var(--color-error)" onclick="executeLogout()">
+                            <span class="btn-text">Sever Connection</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- LOGIC SYSTEM -->
     <script>
         const logWindow = document.getElementById('logWindow');
+        const authOverlay = document.getElementById('authOverlay');
+        const appContainer = document.getElementById('appContainer');
 
+        // ROUTER SYSTEM
+        function switchPane(paneId, navElement) {
+            document.querySelectorAll('.tab-pane').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            document.getElementById(paneId).classList.add('active');
+            navElement.classList.add('active');
+        }
+
+        // TELEMETRY LOGGER
         function appendLog(message, type = 'info') {
-            const now = new Date();
-            const timeStr = now.toLocaleTimeString([], { hour12: false });
-            
+            const timeStr = new Date().toLocaleTimeString([], { hour12: false });
             const entry = document.createElement('div');
             entry.className = `log-entry ${type}`;
             entry.innerHTML = `<span class="timestamp">[${timeStr}]</span> ${message}`;
-            
             logWindow.appendChild(entry);
             logWindow.scrollTop = logWindow.scrollHeight;
         }
 
+        // GATEWAY FUNCTIONS
+        function requireLogin() {
+            authOverlay.classList.remove('hidden');
+            appContainer.classList.add('blur-bg');
+            document.getElementById('authPass').value = '';
+        }
+
+        function unlockDashboard() {
+            authOverlay.classList.add('hidden');
+            appContainer.classList.remove('blur-bg');
+            document.getElementById('authMessage').innerText = '';
+        }
+
+        async function executeAuth(mode) {
+            const email = document.getElementById('authEmail').value;
+            const password = document.getElementById('authPass').value;
+            const msgBox = document.getElementById('authMessage');
+
+            if (!email || !password) {
+                msgBox.innerText = "Credentials cannot be strictly null."; return;
+            }
+            msgBox.innerText = "Processing...";
+
+            try {
+                const response = await fetch(`/auth/${mode}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                const payload = await response.json();
+                
+                if (response.ok) {
+                    appendLog(`[AUTH] Network handshake successful. User identified.`, 'success');
+                    unlockDashboard();
+                } else {
+                    msgBox.innerText = payload.message || "Authentication exception thrown.";
+                }
+            } catch (err) {
+                msgBox.innerText = "Cannot establish network bridge to host.";
+            }
+        }
+
+        async function executeLogout() {
+            try {
+                await fetch('/auth/logout', { method: 'POST' });
+                appendLog(`[AUTH] Connection actively severed.`, 'info');
+                requireLogin();
+            } catch (e) {
+                requireLogin();
+            }
+        }
+
+        // API PIPELINE
         async function triggerTask(endpoint, btnElement, payload) {
-            const cardElement = btnElement.closest('.module-card');
-            
-            // Clean previous states
-            cardElement.classList.remove('state-success', 'state-error');
-            
             btnElement.classList.add('loading');
             btnElement.disabled = true;
-            
-            appendLog(`[EXEC] Dispatching payload to /${endpoint}...`, 'info');
+            appendLog(`[EXEC] Dispatching async routine to /${endpoint}...`, 'info');
             
             try {
                 const response = await fetch(`/${endpoint}`, {
@@ -507,30 +516,26 @@
                     body: JSON.stringify(payload)
                 });
                 
-                let data = {};
-                try {
-                    data = await response.json();
-                } catch(e) {
-                    // if it's not JSON
+                // If core engine returns Unauthenticated, kick them to login UI implicitly
+                if (response.status === 401) {
+                    requireLogin();
+                    appendLog(`[FAIL] Secure context lost. Dropping connection.`, 'error');
+                    return;
                 }
+
+                let data = {};
+                try { data = await response.json(); } catch(e){}
                 
                 if (response.ok) {
-                    appendLog(`[200] Success: Task committed gracefully.`, 'success');
-                    cardElement.classList.add('state-success');
+                    appendLog(`[200] Operation completed flawlessly.`, 'success');
                 } else {
-                    appendLog(`[FAIL] Exception: ${data.message || 'Unknown server error'}`, 'error');
-                    cardElement.classList.add('state-error');
+                    appendLog(`[500] Critical abort: ${data.message || 'Unknown Server Issue'}`, 'error');
                 }
             } catch (error) {
-                appendLog(`[NETWORK] Connection drop: ${error.message}`, 'error');
-                cardElement.classList.add('state-error');
+                appendLog(`[ERR] Pipeline shattered: ${error.message}`, 'error');
             } finally {
                 btnElement.classList.remove('loading');
                 btnElement.disabled = false;
-                
-                setTimeout(() => {
-                    cardElement.classList.remove('state-success', 'state-error');
-                }, 3500);
             }
         }
     </script>
