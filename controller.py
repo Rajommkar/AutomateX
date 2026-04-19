@@ -15,6 +15,8 @@ from modules.logger import (
 )
 from modules.report_generator import generate_report
 from modules.scheduler import NativeScheduler
+from database.models import save_log
+
 
 
 BASE_DIR = Path(__file__).resolve().parent
@@ -142,6 +144,7 @@ class AutomationController:
             return json.load(file)
 
     def _record_task_result(self, task_name: str, result: dict) -> None:
+        save_log(action=task_name, status=result.get("status", "completed"))
         state = self._load_state()
         timestamp = _current_timestamp()
         history_limit = int(self.settings["app"].get("history_limit", 20))
